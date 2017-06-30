@@ -14,7 +14,7 @@ const debug = Debug('alexa-soundaround:app');
 const alexaApp = new Alexa.app('soundaround');
 alexaApp.express({
   expressApp: app,
-  checkCert: false,
+  checkCert: true,
   debug: true
 });
 

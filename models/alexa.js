@@ -89,7 +89,12 @@ module.exports = (alexaApp) => {
     if (_.isEmpty(streamData)) {
       res.say('You don\'t have any paused sound.').shouldEndSession(true);
     } else {
-      res.audioPlayerPlayStream('REPLACE_ALL', streamData);
+      const stream = {
+        url: streamData.Item.streamData.M.url.S,
+        token: streamData.Item.streamData.M.toekn.S,
+        offsetInMilliseconds: streamData.Item.streamData.M.offsetInMilliseconds.N
+      };
+      res.audioPlayerPlayStream('REPLACE_ALL', stream);
     }
     return res.send();
   });
