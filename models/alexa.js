@@ -91,7 +91,7 @@ module.exports = (alexaApp) => {
     } else {
       const stream = {
         url: streamData.Item.streamData.M.url.S,
-        token: streamData.Item.streamData.M.toekn.S,
+        token: streamData.Item.streamData.M.token.S,
         offsetInMilliseconds: streamData.Item.streamData.M.offsetInMilliseconds.N
       };
       res.audioPlayerPlayStream('REPLACE_ALL', stream);
