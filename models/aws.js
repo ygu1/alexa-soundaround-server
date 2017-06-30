@@ -31,16 +31,16 @@ module.exports.putItem = (item) => {
         userId: {
           S: item.userId
         },
-        stream: {
+        streamData: {
           M: {
             url: {
-              S: item.stream.url
+              S: item.streamData.url
             },
             token: {
-              S: item.stream.token
+              S: item.streamData.token
             },
             offsetInMilliseconds: {
-              N: item.stream.offsetInMilliseconds
+              N: item.streamData.offsetInMilliseconds
             }
           }
         }
@@ -80,31 +80,47 @@ module.exports.deleteItem = (userId) => {
 module.exports.updateItem = (item) => {
   return new Promise((resolve, reject) => {
     const params = {
+      TableName: tableName,
       Key: {
         userId: {
           S: item.userId
         }
       },
-      AttributeUpdates: {
-        stream: {
-          Action: 'PUT',
-          Value: {
-            M: {
-              url: {
-                S: item.stream.url
-              },
-              token: {
-                S: item.stream.token
-              },
-              offsetInMilliseconds: {
-                N: item.stream.offsetInMilliseconds
-              }
+      ExpressionAttributeValues: {
+        ':val': {
+          M: {
+            url: {
+              S: item.streamData.url
+            },
+            token: {
+              S: item.streamData.token
+            },
+            offsetInMilliseconds: {
+              N: item.streamData.offsetInMilliseconds
             }
           }
         }
       },
-      TableName: tableName,
+      UpdateExpression: 'set streamData = :val',
       ReturnValues: 'ALL_NEW'
+      // AttributeUpdates: {
+      //   streamData: {
+      //     Action: 'PUT',
+      //     Value: {
+      //       M: {
+      //         url: {
+      //           S: item.streamData.url
+      //         },
+      //         token: {
+      //           S: item.streamData.token
+      //         },
+      //         offsetInMilliseconds: {
+      //           N: item.streamData.offsetInMilliseconds
+      //         }
+      //       }
+      //     }
+      //   }
+      // },
     };
     dynamodb.updateItem(params, (err, data) => {
       if (err) {

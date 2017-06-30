@@ -33,13 +33,13 @@ module.exports = (alexaApp) => {
     const url = soundList[sound][0];
     const token = `${sound}-01`;
     res.say(`Ok, play the ${sound} sound.`);
-    const stream = {
+    const streamData = {
       url,
       token,
-      offsetInMilliseconds: 0
+      offsetInMilliseconds: '0'
     };
-    await awsModel.updateItem({ userId, stream });
-    res.audioPlayerPlayStream('REPLACE_ALL', stream);
+    await awsModel.updateItem({ userId, streamData });
+    res.audioPlayerPlayStream('REPLACE_ALL', streamData);
     return res.send();
   });
 
@@ -63,42 +63,42 @@ module.exports = (alexaApp) => {
       const sound = token.split('-')[0];
       const index = parseInt(token.split('-')[1], 10) - 1;
       const url = soundList[sound][index];
-      const stream = {
+      const streamData = {
         url,
         token,
         expectedPreviousToken: token,
         offsetInMilliseconds: 0
       };
-      res.audioPlayerPlayStream('ENQUEUE', stream);
+      res.audioPlayerPlayStream('ENQUEUE', streamData);
     }
     return res.send();
   });
 
   alexaApp.intent('AMAZON.ResumeIntent', async (req, res) => {
     const userId = req.getSession().details.userId;
-    const stream = await awsModel.getItemByUserId(userId);
-    if (_.isEmpty(stream)) {
+    const streamData = await awsModel.getItemByUserId(userId);
+    if (_.isEmpty(streamData)) {
       res.say('You don\'t have any paused sound.').shouldEndSession(true);
     } else {
-      res.audioPlayerPlayStream('REPLACE_ALL', stream);
+      res.audioPlayerPlayStream('REPLACE_ALL', streamData);
     }
     return res.send();
   });
 
   alexaApp.intent('AMAZON.PauseIntent', async (req, res) => {
     const userId = req.getSession().details.userId;
-    if (!_.isEmpty(req.context.AudioPlayer)) {
+    if (!_.isEmpty(req.context) && !_.isEmpty(req.context.AudioPlayer)) {
       const token = req.context.AudioPlayer.token;
       const sound = token.split('-')[0];
       const index = parseInt(token.split('-')[1], 10) - 1;
       const url = soundList[sound][index];
-      const offsetInMilliseconds = req.context.AudioPlayer.offsetInMilliseconds;
-      const stream = {
+      const offsetInMilliseconds = req.context.AudioPlayer.offsetInMilliseconds.toString();
+      const streamData = {
         url,
         token,
         offsetInMilliseconds
       };
-      await awsModel.updateItem({ userId, stream });
+      await awsModel.updateItem({ userId, streamData });
     }
     res.audioPlayerClearQueue('CLEAR_ALL').shouldEndSession(true);
     return res.send();
