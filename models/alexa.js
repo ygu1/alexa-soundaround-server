@@ -38,7 +38,11 @@ module.exports = (alexaApp) => {
       token,
       offsetInMilliseconds: '0'
     };
-    await awsModel.updateItem({ userId, streamData });
+    try {
+      await awsModel.updateItem({ userId, streamData });
+    } catch (e) {
+      console.log(e);
+    }
     res.audioPlayerPlayStream('REPLACE_ALL', streamData);
     return res.send();
   });
@@ -76,7 +80,12 @@ module.exports = (alexaApp) => {
 
   alexaApp.intent('AMAZON.ResumeIntent', async (req, res) => {
     const userId = req.getSession().details.userId;
-    const streamData = await awsModel.getItemByUserId(userId);
+    let streamData = {};
+    try {
+      streamData = await awsModel.getItemByUserId(userId);
+    } catch (e) {
+      console.log(e);
+    }
     if (_.isEmpty(streamData)) {
       res.say('You don\'t have any paused sound.').shouldEndSession(true);
     } else {
@@ -98,7 +107,11 @@ module.exports = (alexaApp) => {
         token,
         offsetInMilliseconds
       };
-      await awsModel.updateItem({ userId, streamData });
+      try {
+        await awsModel.updateItem({ userId, streamData });
+      } catch (e) {
+        console.log(e);
+      }
     }
     res.audioPlayerClearQueue('CLEAR_ALL').shouldEndSession(true);
     return res.send();
