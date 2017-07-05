@@ -118,7 +118,8 @@ module.exports = (alexaApp) => {
         console.log(e);
       }
     }
-    res.audioPlayerClearQueue('CLEAR_ALL').shouldEndSession(true);
+    res.audioPlayerStop().shouldEndSession(true);
+    // res.audioPlayerClearQueue('CLEAR_ALL').shouldEndSession(true);
     return res.send();
   });
 
